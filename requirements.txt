@@ -1,0 +1,7 @@
+fire
+llama-cpp-python
+openai-whisper
+pyaudio
+pyyaml
+SpeechRecognition
+torch
