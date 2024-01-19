@@ -5,13 +5,13 @@ Simple example of offline voice assistant.
 ## Run
 
 Before start it's necessarily to download Llama model to `llama` directory. Assistant can use any LLM's which
-supported by [llama.cpp](https://github.com/ggerganov/llama.cpp). For Russian language it's better to use [Saiga/Mistral
-by Ilya Gusev](https://huggingface.co/IlyaGusev/saiga_mistral_7b_gguf/tree/main).
+supported by [llama.cpp](https://github.com/ggerganov/llama.cpp). For Russian language it's better to use
+[Saiga/Mistral](https://huggingface.co/IlyaGusev/saiga_mistral_7b_gguf/tree/main) by Ilya Gusev.
 
 To start assistant with basic settings use following command:
 
 ```bash
-python3 main.py
+python3 main.py "llama/model-q4_K.gguf" --device cuda
 ```
 
 ## Installation
