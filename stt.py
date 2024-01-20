@@ -80,7 +80,7 @@ class STT:
         while True:
             audio_data = self.__get_all_audio()
             audio_data = self.__preprocess(audio_data)
-            result = self.audio_model.transcribe(audio_data, fp16 = False, language = "ru")
+            result = self.audio_model.transcribe(audio_data, fp16 = False)
             predicted_text = result["text"]
 
             if predicted_text not in self.banned_results:

@@ -2,6 +2,7 @@ from llm import LLM
 from stt import STT
 from tts import TTS
 import fire
+import intent
 import llm
 import log
 import logging
@@ -15,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 class Assistant:
     def __init__(self, model_path, stt_model = "base", speaker = "xenia", device = "auto"):
-        self.stt = STT(dynamic_energy = True, model = stt_model, device = device, model_root = "whisper")
+        self.stt = STT(model = stt_model, device = device, model_root = "whisper")
         self.llm = LLM(model_path)
         self.tts = TTS(speaker = "xenia", device = device)
         self.queue_input = queue.Queue(maxsize = 4)
@@ -42,12 +43,16 @@ class Assistant:
             message = self.queue_input.get()
             matcher = llm.ACTIVATION_REGEX.match(message)
 
-            if matcher is None:
-                continue
-
             self.llm.message(message)
-            response = self.llm.generate()
-            self.queue_output.put(response)
+
+            if matcher is not None:
+                prefix = matcher.group(1)
+                postfix = matcher.group(2)
+
+
+
+                response = self.llm.generate()
+                self.queue_output.put(response)
 
 
     def __say_output(self):
@@ -56,7 +61,7 @@ class Assistant:
             self.tts.say(response)
 
 
-def start(model_path, stt_model = "base", speaker = "xenia", device = "auto"):
+def start(model_path, stt_model = "medium", speaker = "xenia", device = "auto"):
     assistant = Assistant(model_path, stt_model = stt_model, speaker = speaker, device = device)
     assistant.start()
 

@@ -1,5 +1,6 @@
 fire
 llama-cpp-python
+nltk
 openai-whisper
 pyaudio
 pyyaml
