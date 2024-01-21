@@ -5,6 +5,7 @@ import re
 
 STEMMERS = [ SnowballStemmer(language) for language in [ "english", "russian" ] ]
 REGEX_NUMBER = re.compile(r"""^\d+$""")
+PUNCTUATION = [ ".", ",", ":", ";", "!", "?", "-" ]
 TOKEN_GROUP_START = "("
 TOKEN_GROUP_END = ")"
 TOKEN_NUMBER = "#"
@@ -132,11 +133,20 @@ class Words:
             if value is not None:
                 arguments.append(value)
 
+            index = self.__skip_punctuation(index, tokens)
+
         return arguments
 
 
     def __repr__(self):
         return " ".join([repr(word) for word in self.words])
+
+
+    def __skip_punctuation(self, index, tokens):
+        while index < len(tokens) and tokens[index] in PUNCTUATION:
+            index += 1
+
+        return index
 
 
     def __parse(self, sentence):
