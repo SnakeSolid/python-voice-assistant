@@ -35,7 +35,7 @@ python3 -m pip install -r requirements.txt
 
 Assistant use `ffplay` (from `ffmpeg`) to play generated speech. This program must be accessible in `PATH` directories.
 
-# NLTK Data Directory
+## NLTK Data Directory
 
 After installation you need to download data for NLTK stemmer. It can be done using following command:
 
