@@ -49,8 +49,6 @@ class Assistant:
             message = self.queue_input.get()
             matcher = llm.ACTIVATION_REGEX.match(message)
 
-            self.llm.message(message)
-
             if matcher is not None:
                 prefix = matcher.group(1)
                 postfix = matcher.group(2)
@@ -58,6 +56,11 @@ class Assistant:
                 if not self.agent.execute(postfix):
                     response = self.llm.generate()
                     self.queue_output.put(response)
+                    self.llm.message(prefix)
+                else:
+                    self.llm.message(message)
+            else:
+                self.llm.message(message)
 
 
     def __say_output(self):
