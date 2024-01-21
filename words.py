@@ -25,8 +25,8 @@ def token_to_stem(token):
     return result
 
 
-def sentence_to_stem(sentence):
-    tokens = nltk.word_tokenize(sentence)
+def text_to_stem(text):
+    tokens = nltk.word_tokenize(text)
     result = []
 
     for token in tokens:
@@ -116,8 +116,8 @@ class Integer:
 
 
 class Words:
-    def __init__(self, sentence):
-        self.words = self.__parse(sentence)
+    def __init__(self, text):
+        self.words = self.__parse(text)
 
 
     def match(self, tokens):
@@ -149,9 +149,9 @@ class Words:
         return index
 
 
-    def __parse(self, sentence):
+    def __parse(self, text):
         result = []
-        tokens = nltk.word_tokenize(sentence)
+        tokens = nltk.word_tokenize(text)
         index = 0
 
         while index < len(tokens):

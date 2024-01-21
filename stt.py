@@ -16,10 +16,9 @@ class STT:
     def __init__(self,
             model = "base",
             device = ("cuda" if torch.cuda.is_available() else "cpu"),
-            energy = 300,
-            pause = 2,
+            energy = 500,
+            pause = 1,
             dynamic_energy = False,
-            save_file = False,
             model_root="~/.cache/whisper",
             mic_index = None
         ):
@@ -39,8 +38,8 @@ class STT:
 
         self.source = sr.Microphone(sample_rate = 16000, device_index = mic_index)
         self.recorder = sr.Recognizer()
-        self.recorder.energy_threshold = self.energy
         self.recorder.pause_threshold = self.pause
+        self.recorder.energy_threshold = self.energy
         self.recorder.dynamic_energy_threshold = self.dynamic_energy
 
         with self.source:

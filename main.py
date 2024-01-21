@@ -65,8 +65,22 @@ def start_alarm(speaker, hours, minutes):
     speaker("Будильник на {} установлен".format(name))
 
 
-def start(model_path, stt_model = "medium", speaker = "xenia", device = "auto"):
-    assistant = Assistant(model_path, stt_model = stt_model, speaker = speaker, device = device)
+def start(llm_model_path,
+          stt_energy=400,
+          stt_pause=1,
+          stt_dynamic_energy=False,
+          stt_model="base",
+          tts_speaker="xenia",
+          tts_sample_rate=24000,
+          device="auto"):
+    assistant = Assistant(llm_model_path,
+                          stt_energy=stt_energy,
+                          stt_pause=stt_pause,
+                          stt_dynamic_energy=stt_dynamic_energy,
+                          stt_model=stt_model,
+                          tts_speaker=tts_speaker,
+                          tts_sample_rate=tts_sample_rate,
+                          device=device)
     assistant.action("напомни через # секунд", lambda speaker, s: start_timer(speaker, 0, 0, s))
     assistant.action("напомни через # минут # секунд", lambda speaker, m, s: start_timer(speaker, 0, m, s))
     assistant.action("напомни через # минут", lambda speaker, m: start_timer(speaker, 0, m, 0))

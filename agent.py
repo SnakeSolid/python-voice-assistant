@@ -1,4 +1,4 @@
-from words import sentence_to_stem, Words
+from words import text_to_stem, Words
 import collections
 import log
 import logging
@@ -27,7 +27,7 @@ class Agent:
 
     def execute(self, sentence):
         LOGGER.info("Sentence `%s`", sentence)
-        stems = sentence_to_stem(sentence)
+        stems = text_to_stem(sentence)
         LOGGER.info("Word stems %s", stems)
 
         for action in self.actions:
