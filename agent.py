@@ -34,6 +34,8 @@ class Agent:
             arguments = action.words.match(stems)
 
             if arguments is not None:
+                LOGGER.info("Action found.")
+
                 action.callback(*arguments)
 
                 return True

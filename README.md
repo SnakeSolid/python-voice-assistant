@@ -35,6 +35,24 @@ python3 -m pip install -r requirements.txt
 
 Assistant use `ffplay` (from `ffmpeg`) to play generated speech. This program must be accessible in `PATH` directories.
 
+# NLTK Data Directory
+
+After installation you need to download data for NLTK stemmer. It can be done using following command:
+
+```bash
+python3 -c "import nltk ; nltk.download('punkt')"
+
+```
+
+By default NLTK will save all downloaded files to `$HOME` directory. If it's necessarily to define another location use
+`NLTK_DATA` environment variables:
+
+```bash
+NLTK_DATA=nltk_data/ python3 -c "import nltk ; nltk.download('punkt')"
+```
+
+Where `nltk_data` - directory for NLTK files.
+
 ## License
 
 Source code is primarily distributed under the terms of the MIT license. See LICENSE for details.
