@@ -9,7 +9,7 @@ LOGGER = logging.getLogger(__name__)
 ACTIVATION_REGEX = re.compile(r"^(.*)Алиса[\.,!?](.*)$", re.IGNORECASE)
 SYSTEM_PROMPT = """Ты — Алиса, русскоязычный автоматический ассистент. Ты разговариваешь с людьми и помогаешь им."""
 MAX_RESPONSE_LENGTH = 250
-MIN_REPEAT_LENGTH = 20
+REPEAT_LENGTH = 20
 
 
 class LLM:
@@ -62,15 +62,10 @@ class LLM:
 
 
     def __detect_repeat(self, text):
-        index = MIN_REPEAT_LENGTH
-        start = 2 * index
+        if REPEAT_LENGTH < len(text):
+            tail = text[-REPEAT_LENGTH:]
 
-        while start < len(text):
-            if text[-index:] == text[-start:-index]:
-                return index
-
-            index += 1
-            start += 2
+            return text.find(tail, 0, -REPEAT_LENGTH)
 
         return -1
 
