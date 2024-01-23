@@ -102,8 +102,6 @@ class LLM:
 
 
 def start(model_path, story_mode = True):
-    print(story_mode)
-
     llm = LLM(model_path, story_mode = story_mode)
 
     LOGGER.info("Ready.")
