@@ -18,6 +18,7 @@ class Assistant:
 
     def __init__(self,
                  llm_model_path,
+                 llm_story_mode=True,
                  stt_energy=500,
                  stt_pause=1,
                  stt_dynamic_energy=False,
@@ -32,7 +33,7 @@ class Assistant:
                        model=stt_model,
                        device=device,
                        model_root="whisper")
-        self.llm = LLM(llm_model_path)
+        self.llm = LLM(llm_model_path, story_mode = llm_story_mode)
         self.tts = TTS(speaker=tts_speaker,
                        sample_rate=tts_sample_rate,
                        device=device)
@@ -82,6 +83,7 @@ class Assistant:
 
 
 def start(llm_model_path,
+          llm_story_mode=True,
           stt_energy=500,
           stt_pause=1,
           stt_dynamic_energy=False,
@@ -90,6 +92,7 @@ def start(llm_model_path,
           tts_sample_rate=24000,
           device="auto"):
     assistant = Assistant(llm_model_path,
+                          llm_story_mode=llm_story_mode,
                           stt_energy=stt_energy,
                           stt_pause=stt_pause,
                           stt_dynamic_energy=stt_dynamic_energy,
