@@ -15,12 +15,16 @@ LOGGER = logging.getLogger(__name__)
 
 
 def sleep_and_send(speaker, duration, message):
+    LOGGER.info("Sleep for %0.2f seconds.", duration)
+
     time.sleep(duration)
     speaker(message)
 
 
 def start_timer(speaker, hours, minutes, seconds):
-    wait_sconds = hours * 3600 * minutes * 60 + seconds
+    LOGGER.info("Set timer for %d hours %d minutes %d seconds.", hours, minutes, seconds)
+
+    wait_sconds = hours * 3600 + minutes * 60 + seconds
 
     if hours == 0 and minutes == 0:
         name = "{} секунд".format(seconds)
@@ -43,6 +47,8 @@ def start_timer(speaker, hours, minutes, seconds):
 
 
 def start_alarm(speaker, hours, minutes):
+    LOGGER.info("Set alarm for %d hours %d minutes.", hours, minutes)
+
     now = datetime.now()
     alarm = now.replace(minute = minutes)
     alarm = alarm.replace(hour = hours)
@@ -66,6 +72,7 @@ def start_alarm(speaker, hours, minutes):
 
 
 def start(llm_model_path,
+          llm_story_mode=False,
           stt_energy=400,
           stt_pause=1,
           stt_dynamic_energy=False,
@@ -74,6 +81,7 @@ def start(llm_model_path,
           tts_sample_rate=24000,
           device="auto"):
     assistant = Assistant(llm_model_path,
+                          llm_story_mode=llm_story_mode,
                           stt_energy=stt_energy,
                           stt_pause=stt_pause,
                           stt_dynamic_energy=stt_dynamic_energy,
