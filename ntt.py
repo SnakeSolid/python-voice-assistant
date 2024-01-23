@@ -20,7 +20,7 @@ class NTT:
 
 
     def convert(self, value):
-        LOGGER.info("Comvert %d to words.", value)
+        LOGGER.info("Convert %d to words.", value)
 
         if value == 0:
             return UNITS[0]
