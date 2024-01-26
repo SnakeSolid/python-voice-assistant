@@ -43,7 +43,7 @@ class LLM:
 
             LOGGER.info("Got token `%s`.", token_str)
 
-            if token == self.model.token_eos() or (token_str == "." and not self.story_mode) or (token_str == " " and len(result) > MAX_RESPONSE_LENGTH):
+            if token == self.model.token_eos() or (not self.story_mode and token_str == "." ) or (not self.story_mode and token_str == " " and len(result) > MAX_RESPONSE_LENGTH):
                 break
 
             repeat = self.__detect_repeat(result)
@@ -101,9 +101,10 @@ class LLM:
         return message_tokens
 
 
-def start(model_path, story_mode = True):
+def start(model_path, story_mode = False):
     llm = LLM(model_path, story_mode = story_mode)
 
+    LOGGER.info("Story mode = %s.", story_mode)
     LOGGER.info("Ready.")
 
     while True:
