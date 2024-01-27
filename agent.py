@@ -42,16 +42,16 @@ class Agent:
 
 if __name__ == "__main__":
 
-    def timer(minutes, seconds):
+    def timer(minutes: int, seconds: int):
         print("Таймер на {}:{:02}".format(minutes, seconds))
 
-    def alarm(hours, minutes):
+    def alarm(hours: int, minutes: int):
         print("Будильник на {}:{:02}".format(hours, minutes))
 
-    def start(name):
+    def start(name: str):
         print("Найти `{}`".format(name))
 
-    def search(query):
+    def search(query: str):
         print("Запустить `{}`".format(query))
 
     agent = Agent()
