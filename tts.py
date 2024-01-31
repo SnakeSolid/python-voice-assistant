@@ -1,3 +1,4 @@
+import fire
 import log
 import logging
 import ntt
@@ -15,7 +16,7 @@ REGEX_WORD = re.compile(r"(\w+|\.|,|:|;|!|\?)")
 REGEX_NUMBER = re.compile(r"(\d+)")
 
 
-def get_model(device = "auto", n_threads = 4):
+def get_model(device = "cpu", n_threads = 4):
     device = torch.device(device)
     torch.set_num_threads(n_threads)
 
@@ -105,12 +106,15 @@ class TTS:
             .replace("%", " процент ")
 
 
-if __name__ == "__main__":
-    import sys
-
-    tts = TTS()
+def start(device = "cpu", n_threads = 4):
+    tts = TTS(device = device, n_threads = n_threads)
 
     LOGGER.info("Ready.")
 
-    for message in sys.argv[1:]:
+    while True:
+        message = input("Message: ")
         tts.say(message)
+
+
+if __name__ == "__main__":
+    fire.Fire(start)
