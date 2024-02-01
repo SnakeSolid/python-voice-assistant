@@ -80,7 +80,7 @@ class LLM:
             tail = text[-REPEAT_LENGTH:]
 
             if text.find(tail, 0, -REPEAT_LENGTH) != -1:
-                return -REPEAT_LENGTH
+                return len(text) - REPEAT_LENGTH
 
         return -1
 
