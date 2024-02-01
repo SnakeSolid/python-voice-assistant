@@ -1,3 +1,4 @@
+import fire
 import log
 import logging
 import numpy as np
@@ -5,38 +6,38 @@ import queue
 import speech_recognition as sr
 import threading
 import time
-import torch 
+import torch
 import whisper
-
 
 LOGGER = logging.getLogger(__name__)
 
 
 class STT:
-    def __init__(self,
-            model = "base",
-            device = ("cuda" if torch.cuda.is_available() else "cpu"),
-            energy = 500,
-            pause = 1,
-            dynamic_energy = False,
-            model_root="~/.cache/whisper",
-            mic_index = None
-        ):
+
+    def __init__(
+            self,
+            model: str = "base",
+            device: str = ("cuda" if torch.cuda.is_available() else "cpu"),
+            energy: int = 500,
+            pause: int = 1,
+            dynamic_energy: bool = False,
+            model_root: str = "~/.cache/whisper",
+            mic_index: object = None):
         self.energy = energy
         self.pause = pause
         self.dynamic_energy = dynamic_energy
-        self.audio_model = whisper.load_model(model, download_root = model_root).to(device)
+        self.audio_model = whisper.load_model(
+            model, download_root=model_root).to(device)
         self.audio_queue = queue.Queue()
         self.result_queue = queue.Queue()
         self.microphone_active = False
-        self.banned_results = [ "", " ", "\n", None ]
+        self.banned_results = ["", " ", "\n", None]
         self.__setup_mic(mic_index)
 
-
-    def __setup_mic(self, mic_index):
+    def __setup_mic(self, mic_index: object):
         LOGGER.info("Setup microphone %s", mic_index)
 
-        self.source = sr.Microphone(sample_rate = 16000, device_index = mic_index)
+        self.source = sr.Microphone(sample_rate=16000, device_index=mic_index)
         self.recorder = sr.Recognizer()
         self.recorder.pause_threshold = self.pause
         self.recorder.energy_threshold = self.energy
@@ -45,14 +46,14 @@ class STT:
         with self.source:
             self.recorder.adjust_for_ambient_noise(self.source)
 
-
     def __preprocess(self, data):
-        return torch.from_numpy(np.frombuffer(data, np.int16).flatten().astype(np.float32) / 32768.0)
+        return torch.from_numpy(
+            np.frombuffer(data, np.int16).flatten().astype(np.float32) /
+            32768.0)
 
-
-    def __get_all_audio(self, min_time = -1.):
+    def __get_all_audio(self, min_time=-1.):
         LOGGER.info("Get audio minimal time = %f0.3", min_time)
-        
+
         audio = bytes()
         got_audio = False
         time_start = time.time()
@@ -67,32 +68,34 @@ class STT:
 
         return data
 
-
     def __record_load(self, _, audio):
         data = audio.get_raw_data()
 
         if self.microphone_active:
             self.audio_queue.put_nowait(data)
 
-
     def __transcribe_forever(self):
         while True:
             audio_data = self.__get_all_audio()
             audio_data = self.__preprocess(audio_data)
-            result = self.audio_model.transcribe(audio_data, fp16 = False, language = "ru")
+            result = self.audio_model.transcribe(audio_data,
+                                                 fp16=False,
+                                                 language="ru")
             predicted_text = result["text"]
 
             if predicted_text not in self.banned_results:
                 self.result_queue.put_nowait(predicted_text)
 
-
-    def listen_loop(self, callback, phrase_time_limit = None):
+    def listen_loop(self, callback, phrase_time_limit=None):
         LOGGER.info("Listening...")
 
         self.enable_microphone()
-        self.recorder.listen_in_background(self.source, self.__record_load, phrase_time_limit = phrase_time_limit)
+        self.recorder.listen_in_background(self.source,
+                                           self.__record_load,
+                                           phrase_time_limit=phrase_time_limit)
 
-        thread = threading.Thread(target = self.__transcribe_forever, daemon = True)
+        thread = threading.Thread(target=self.__transcribe_forever,
+                                  daemon=True)
         thread.start()
 
         while True:
@@ -102,17 +105,27 @@ class STT:
 
             callback(message)
 
-
     def enable_microphone(self):
         self.microphone_active = True
-
 
     def disable_microphone(self):
         self.microphone_active = False
 
 
-if __name__ == "__main__":
-    stt = STT(dynamic_energy = True, model = "base", device = "cpu", model_root = "whisper")
-    stt.listen_loop(print, phrase_time_limit = 60)
+def start(
+    dynamic_energy: bool = True,
+    model: str = "medium",
+    device: str = ("cuda" if torch.cuda.is_available() else "cpu"),
+    phrase_time_limit: int = 60,
+):
+    stt = STT(dynamic_energy=dynamic_energy,
+              model=model,
+              device=device,
+              model_root="whisper")
+    stt.listen_loop(print, phrase_time_limit=phrase_time_limit)
 
     LOGGER.info("Ready.")
+
+
+if __name__ == "__main__":
+    fire.Fire(start)
