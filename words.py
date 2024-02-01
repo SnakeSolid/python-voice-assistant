@@ -148,7 +148,7 @@ class Words:
               tokens: list[Token]) -> tuple[bool, list[object]]:
         stems: list[Stem] = self.__tokens_to_stems(tokens)
         arguments = []
-        index = 0
+        index = self.__skip_punctuation(0, stems)
 
         for word in self.words:
             index, value = word.match(text, stems, index)
@@ -173,7 +173,7 @@ class Words:
         return " ".join([repr(word) for word in self.words])
 
     def __skip_punctuation(self, index: int, stems: list[Stem]):
-        while index < len(stems) and stems[index] in PUNCTUATION:
+        while index < len(stems) and stems[index].stem in PUNCTUATION:
             index += 1
 
         return index
