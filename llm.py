@@ -5,7 +5,7 @@ import logging
 import re
 
 LOGGER = logging.getLogger(__name__)
-ACTIVATION_REGEX = re.compile(r"^(.*)Алиса[\.,!?](.*)$", re.IGNORECASE)
+ACTIVATION_REGEX = re.compile(r"^(.*)\bАлиса\b(.*)$", re.IGNORECASE)
 SYSTEM_PROMPT = """Ты — Алиса, русскоязычный автоматический ассистент. Ты разговариваешь с людьми и помогаешь им."""
 END_OF_SENTENCE = ["\n", ".", ":", ";"]
 MAX_RESPONSE_LENGTH = 256

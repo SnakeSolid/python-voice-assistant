@@ -17,15 +17,16 @@ LOGGER = logging.getLogger(__name__)
 class Assistant:
 
     def __init__(self,
-                 llm_model_path,
-                 llm_story_mode=True,
-                 stt_energy=500,
-                 stt_pause=1,
-                 stt_dynamic_energy=False,
-                 stt_model="base",
-                 tts_speaker="xenia",
-                 tts_sample_rate=48000,
-                 device="auto"):
+                 llm_model_path: str | None = None,
+                 llm_story_mode: bool = False,
+                 stt_energy: int = 500,
+                 stt_pause: int = 1,
+                 stt_dynamic_energy: bool = False,
+                 stt_model: str = "base",
+                 tts_speaker: str = "xenia",
+                 tts_sample_rate: int = 24000,
+                 dialog_mode: bool = False,
+                 device: str = "auto"):
         self.agent = Agent()
         self.stt = STT(energy=stt_energy,
                        pause=stt_pause,
@@ -33,12 +34,14 @@ class Assistant:
                        model=stt_model,
                        device=device,
                        model_root="whisper")
-        self.llm = LLM(llm_model_path, story_mode = llm_story_mode)
+        self.llm = (LLM(llm_model_path, story_mode=llm_story_mode)
+                    if llm_model_path is not None else None)
         self.tts = TTS(speaker=tts_speaker,
                        sample_rate=tts_sample_rate,
                        device=device)
-        self.queue_input = queue.Queue(maxsize=4)
-        self.queue_output = queue.Queue(maxsize=4)
+        self.dialog_mode = dialog_mode
+        self.queue_input: queue.Queue = queue.Queue(maxsize=4)
+        self.queue_output: queue.Queue = queue.Queue(maxsize=4)
 
     def action(self, pattern, callback):
         self.agent.action(pattern,
@@ -62,19 +65,17 @@ class Assistant:
         while True:
             message = self.queue_input.get()
             matcher = llm.ACTIVATION_REGEX.match(message)
+            send_request = self.dialog_mode
 
             if matcher is not None:
                 prefix = matcher.group(1)
                 postfix = matcher.group(2)
+                send_request |= not self.agent.execute(postfix)
 
-                if not self.agent.execute(postfix):
-                    response = self.llm.generate()
-                    self.queue_output.put(response)
-                    self.llm.message(prefix)
-                else:
-                    self.llm.message(message)
-            else:
+            if send_request and self.llm is not None:
                 self.llm.message(message)
+                response = self.llm.generate()
+                self.queue_output.put(response)
 
     def __say_output(self):
         while True:
@@ -82,15 +83,16 @@ class Assistant:
             self.tts.say(response)
 
 
-def start(llm_model_path,
-          llm_story_mode=True,
-          stt_energy=500,
-          stt_pause=1,
-          stt_dynamic_energy=False,
-          stt_model="base",
-          tts_speaker="xenia",
-          tts_sample_rate=24000,
-          device="auto"):
+def start(llm_model_path: str | None = None,
+          llm_story_mode: bool = False,
+          stt_energy: int = 500,
+          stt_pause: int = 1,
+          stt_dynamic_energy: bool = False,
+          stt_model: str = "base",
+          tts_speaker: str = "xenia",
+          tts_sample_rate: int = 24000,
+          dialog_mode: bool = False,
+          device: str = "auto"):
     assistant = Assistant(llm_model_path,
                           llm_story_mode=llm_story_mode,
                           stt_energy=stt_energy,
@@ -99,6 +101,7 @@ def start(llm_model_path,
                           stt_model=stt_model,
                           tts_speaker=tts_speaker,
                           tts_sample_rate=tts_sample_rate,
+                          dialog_mode=dialog_mode,
                           device=device)
     assistant.start()
 
